@@ -18,7 +18,7 @@ impl Random {
 impl Mutate for Random {
     fn gene(&self, gene: &Gene, assets: &Assets) -> Result<Gene> {
         if rand::rng().random_range(0.0..1.0) < self.rate {
-            Ok(Gene::new(assets))
+            Ok(Gene::new(gene.id, assets))
         } else {
             Ok(gene.clone())
         }

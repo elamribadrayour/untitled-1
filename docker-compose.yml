@@ -1,0 +1,11 @@
+services:
+  untitled-1:
+    image: untitled-1
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.prod
+    volumes:
+      - .:/app
+      - ./target:/app/target
+      - ./results:/app/results
+    command: untitled-1

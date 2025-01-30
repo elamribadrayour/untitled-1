@@ -1,4 +1,5 @@
-use crate::{population::Individual, utils::Assets};
+use crate::population::Individual;
+use crate::utils::{Assets, Grid};
 
 pub struct Population {
     pub individuals: Vec<Individual>,
@@ -27,7 +28,9 @@ impl Population {
         self.individuals.len()
     }
 
-    pub fn save(&self, batch: usize) {
-        self.individuals.iter().for_each(|i| i.save(batch));
+    pub fn save(&self, epoch: usize, assets: &Assets, grid: &Grid) {
+        self.individuals.iter().for_each(|i| {
+            i.save(epoch, assets, grid);
+        });
     }
 }

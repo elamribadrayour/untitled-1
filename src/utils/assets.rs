@@ -1,14 +1,14 @@
-use image::ImageBuffer;
-use rand::seq::IndexedRandom;
+use rand::Rng;
 
 use crate::utils::Asset;
 
 pub struct Assets {
+    pub size: usize,
     pub values: Vec<Asset>,
 }
 
 impl Assets {
-    pub fn new() -> Self {
+    pub fn new(size: usize) -> Self {
         let colors = [
             "#2ca58d", // Teal
             "#f46197", // Pink
@@ -21,12 +21,11 @@ impl Assets {
             "#d64161", // Red
             "#6b4226", // Brown
         ];
-        let values = colors.iter().map(|x| Asset::new(x)).collect();
-        Self { values }
+        let values = colors.iter().map(|x| Asset::new(x, size)).collect();
+        Self { size, values }
     }
 
-    pub fn rand(&self) -> ImageBuffer<image::Rgba<u8>, std::vec::Vec<u8>> {
-        let mut rng = rand::rng();
-        self.values.choose(&mut rng).unwrap().image.clone()
+    pub fn rand(&self) -> usize {
+        rand::rng().random_range(0..self.values.len())
     }
 }

@@ -1,6 +1,6 @@
 use image::RgbaImage;
 
-use crate::utils::Assets;
+use crate::utils::{Assets, Grid};
 
 use crate::population::Gene;
 
@@ -12,10 +12,10 @@ pub struct Individual {
 
 impl Individual {
     pub fn new(id: usize, individual_size: usize, assets: &Assets) -> Self {
-        Self {
-            id,
-            genes: (0..individual_size).map(|_| Gene::new(assets)).collect(),
-        }
+        let genes = (0..individual_size)
+            .map(|id| Gene::new(id, assets))
+            .collect();
+        Self { id, genes }
     }
 
     pub fn genes(genes: &[Gene], id: usize) -> Self {
@@ -23,6 +23,10 @@ impl Individual {
             id,
             genes: genes.to_vec(),
         }
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item = &Gene> {
+        self.genes.iter()
     }
 
     pub fn is_empty(&self) -> bool {
@@ -33,28 +37,28 @@ impl Individual {
         self.genes.len()
     }
 
-    pub fn save(&self, batch: usize) {
-        println!("saving image bath: {} -- id: {}", batch, self.id);
-        let grid_size = (self.len() as f64).sqrt().ceil() as u32;
-        let width = 100 * grid_size;
-        let height = 100 * grid_size;
-        let mut image = RgbaImage::new(width, height);
+    pub fn save(&self, epoch: usize, assets: &Assets, grid: &Grid) {
         let images = self
             .genes
             .iter()
-            .map(|gene| gene.image.clone())
+            .map(|gene| (gene.id, &assets.values[gene.color].image))
             .collect::<Vec<_>>();
 
-        for (i, gene_image) in images.iter().enumerate() {
-            let x_offset = (i as u32 % grid_size) * 100;
-            let y_offset = (i as u32 / grid_size) * 100;
-            for (x, y, pixel) in gene_image.enumerate_pixels() {
-                image.put_pixel(x + x_offset, y + y_offset, *pixel);
+        let grid_dim = grid.dim as u32;
+        let asset_size = assets.size as u32;
+        let (width, height) = (asset_size * grid_dim, asset_size * grid_dim);
+        let mut output = RgbaImage::new(width, height);
+
+        for (id, asset) in images.iter() {
+            let [x, y] = grid.get(*id);
+            let (x_offset, y_offset) = (x as u32 * asset_size, y as u32 * asset_size);
+            for (px, py, pixel) in asset.enumerate_pixels() {
+                output.put_pixel(px + x_offset, py + y_offset, *pixel);
             }
         }
 
-        image
-            .save(format!("results/result-{}-{}.png", self.id, batch))
+        output
+            .save(format!("results/result-{}-{}.png", self.id, epoch))
             .unwrap();
     }
 }

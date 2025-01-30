@@ -2,6 +2,10 @@
 
 This project is a straightforward implementation of a genetic algorithm, designed for anyone curious to understand the steps involved in such algorithms. The assets are genes of different colors generated to simulate the genetic process. The goal is to help users understand the evolutionary process that each individual undergoes during a genetic algorithm evolution, as visualized through the images saved.
 
+<p align="center">
+    <img src="assets/result.png" width="500" height="500" />
+</p>
+
 ## Project Structure
 
 - **src/main.rs**: The entry point of the application. It initializes the algorithm and population, and runs the genetic algorithm for a specified number of epochs.

@@ -1,16 +1,16 @@
-use image::ImageBuffer;
-
 use crate::utils::Assets;
 
 #[derive(Clone)]
 pub struct Gene {
-    pub image: ImageBuffer<image::Rgba<u8>, std::vec::Vec<u8>>,
+    pub id: usize,
+    pub color: usize,
 }
 
 impl Gene {
-    pub fn new(assets: &Assets) -> Self {
+    pub fn new(id: usize, assets: &Assets) -> Self {
         Self {
-            image: assets.rand(),
+            id,
+            color: assets.rand(),
         }
     }
 }

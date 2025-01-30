@@ -3,34 +3,59 @@ mod population;
 mod utils;
 
 use anyhow::Result;
+use simple_logger::SimpleLogger;
 
 use crate::algorithm::Algorithm;
 use crate::population::Population;
-use crate::utils::Assets;
+use crate::utils::{Assets, Grid};
 
 fn main() -> Result<()> {
-    let epochs = 20;
-    let population_size = 3;
-    let individual_size = 10 * 10;
+    SimpleLogger::new().init().unwrap();
 
-    let assets = Assets::new();
-    let algorithm = Algorithm::new("random", "best", 0.8, "random", 0.5, "random", 0.5)?;
+    let epochs = 200;
+    let asset_size = 100;
+    let population_size = 100;
+    let individual_size = 15 * 15;
 
+    let mutation_rate = 0.1;
+    let crossover_rate = 0.5;
+    let selection_rate = 0.5;
+
+    let selection_function = "best";
+    let mutation_function = "random";
+    let crossover_function = "random";
+    let fitness_function = "uniformity";
+
+    log::info!(
+        "running untitled-1: epochs: {}, population_size: {}, individual_size: {}",
+        epochs,
+        population_size,
+        individual_size
+    );
+
+    log::info!("loading assets");
+    let assets = Assets::new(asset_size);
+    let grid = Grid::new(individual_size);
+
+    log::info!("loading algorithm");
+    let algorithm = Algorithm::new(
+        fitness_function,
+        selection_function,
+        crossover_rate,
+        crossover_function,
+        mutation_rate,
+        mutation_function,
+        selection_rate,
+    )?;
+
+    log::info!("creating results directory");
     std::fs::create_dir_all("results")?;
 
-    let mut population = Population::new(population_size, individual_size, &assets);
-    for batch in 0..epochs {
-        println!(
-            "batch: {} -- population size: {:?}",
-            batch,
-            population.len()
-        );
-        let fitnesses = algorithm.fitness(&population)?;
-        population = algorithm.select(&population, &fitnesses)?;
-        population = algorithm.crossover(&population, population_size)?;
-        population = algorithm.mutate(&population, &assets)?;
-        population.save(batch)
-    }
+    log::info!("creating population");
+    let population = Population::new(population_size, individual_size, &assets);
+
+    log::info!("running algorithm");
+    algorithm.run(&grid, epochs, &assets, population_size, &population)?;
 
     Ok(())
 }

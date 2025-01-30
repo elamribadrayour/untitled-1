@@ -8,16 +8,16 @@ pub struct Asset {
 }
 
 impl Asset {
-    pub fn new(name: &str) -> Self {
+    pub fn new(name: &str, size: usize) -> Self {
         let hex = HexColor::parse(name).unwrap();
-        let color = Rgba([hex.r, hex.g, hex.b, 255]);
+        let rgba = Rgba([hex.r, hex.g, hex.b, 255]);
         let mut image = image::open("assets/gene.png")
             .unwrap()
-            .resize(100, 100, FilterType::Lanczos3)
+            .resize(size as u32, size as u32, FilterType::Lanczos3)
             .to_rgba8();
         for pixel in image.pixels_mut() {
             if *pixel.0.last().unwrap() > 0 {
-                *pixel = color
+                *pixel = rgba
             }
         }
 

@@ -7,4 +7,9 @@ edition = "2021"
 anyhow = "1.0.95"
 hex_color = "3.0.0"
 image = "0.25.5"
+log = "0.4.25"
 rand = "0.9.0"
+simple_logger = "5.0.0"
+
+[profile.release]
+debug = 1

@@ -2,7 +2,7 @@ use anyhow::Result;
 
 use crate::algorithm::{crossover, fitness, mutate, select};
 use crate::population::Population;
-use crate::utils::Assets;
+use crate::utils::{Assets, Grid};
 
 pub struct Algorithm {
     pub mutate: Box<dyn mutate::Mutate>,
@@ -29,8 +29,13 @@ impl Algorithm {
         })
     }
 
-    pub fn fitness(&self, population: &Population) -> Result<Vec<f32>> {
-        self.fitness.population(population)
+    pub fn fitness(
+        &self,
+        population: &Population,
+        assets: &Assets,
+        grid: &Grid,
+    ) -> Result<Vec<f32>> {
+        self.fitness.population(population, assets, grid)
     }
 
     pub fn mutate(&self, population: &Population, assets: &Assets) -> Result<Population> {
@@ -43,5 +48,38 @@ impl Algorithm {
 
     pub fn crossover(&self, population: &Population, size: usize) -> Result<Population> {
         self.crossover.population(population, size)
+    }
+
+    pub fn run(
+        &self,
+        grid: &Grid,
+        epochs: usize,
+        assets: &Assets,
+        population_size: usize,
+        population: &Population,
+    ) -> Result<Population> {
+        let mut fitness = 0.0;
+        let mut output = Population::individuals(&population.individuals);
+        for epoch in 0..epochs {
+            log::info!(
+                "batch: {} -- population size: {:?} -- fitness: {:?}",
+                epoch,
+                population.len(),
+                fitness
+            );
+            let fitnesses = self.fitness(&output, assets, grid)?;
+            fitness = *fitnesses
+                .iter()
+                .max_by(|a, b| a.partial_cmp(b).unwrap())
+                .unwrap();
+            output = self.select(&output, &fitnesses)?;
+            output = self.crossover(&output, population_size)?;
+            output = self.mutate(&output, assets)?;
+
+            if epoch % 100 == 0 {
+                output.save(epoch, assets, grid);
+            }
+        }
+        Ok(output)
     }
 }
