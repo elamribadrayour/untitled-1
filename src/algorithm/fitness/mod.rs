@@ -1,7 +1,7 @@
 mod fitness_impl;
 mod random;
-mod uniformity;
+mod strict_uniformity;
 
 pub use fitness_impl::{get, Fitness};
 pub use random::Random;
-pub use uniformity::Uniformity;
+pub use strict_uniformity::StrictUniformity;

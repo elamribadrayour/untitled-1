@@ -46,21 +46,21 @@ The application runs a genetic algorithm over a specified number of epochs. It p
 
 ### Fitness
 
-* Random: Generates a random fitness value for each population, inidividual and gene.
-* Uniformity: Checks how much a set of neighboring genes have a uniformity of colors.
+* **Random**: Generates a random fitness value for each population, inidividual and gene.
+* **Strict Uniformity**: Checks how much the colors are uniform in an individual.
 
 ### Selection
 
-* Random: Selects a random individual from the population.
-* Best: Selects the best individuals from the population.
+* **Random**: Selects a random individual from the population.
+* **Best**: Selects the best individuals from the population.
 
 ### Crossover
 
-* Random: Selects a random gene from the parents and copies it to the offspring.
+* **Random**: Selects a random gene from the parents and copies it to the offspring.
 
 ### Mutation
 
-* Random: Change the color a gene randomly.
+* **Random**: Change the color a gene randomly.
 
 ## License
 

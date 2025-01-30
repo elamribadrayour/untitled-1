@@ -2,7 +2,7 @@ use anyhow::Result;
 use rand::Rng;
 
 use crate::algorithm::Fitness;
-use crate::population::{Gene, Individual, Population};
+use crate::population::{Individual, Population};
 use crate::utils::{Assets, Grid};
 
 pub struct Random {}
@@ -14,10 +14,6 @@ impl Random {
 }
 
 impl Fitness for Random {
-    fn gene(&self, _: &Gene, _: &Individual, _: &Assets, _: &Grid) -> Result<f32> {
-        Ok(rand::rng().random_range(0.0..1.0))
-    }
-
     fn individual(&self, _: &Individual, _: &Assets, _: &Grid) -> Result<f32> {
         Ok(rand::rng().random_range(0.0..1.0))
     }

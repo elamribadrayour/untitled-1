@@ -7,6 +7,7 @@ use crate::utils::{Assets, Grid};
 
 pub struct Algorithm {
     pub epochs: usize,
+    pub threshold: f32,
     pub mutate: Box<dyn mutate::Mutate>,
     pub select: Box<dyn select::Select>,
     pub fitness: Box<dyn fitness::Fitness>,
@@ -17,6 +18,7 @@ impl Algorithm {
     pub fn new(config: &AlgorithmConfig) -> Result<Self> {
         Ok(Self {
             epochs: config.epochs,
+            threshold: config.threshold,
             fitness: fitness::get(&config.fitness_config)?,
             mutate: mutate::get(&config.mutation_config)?,
             select: select::get(&config.selection_config)?,
@@ -66,28 +68,41 @@ impl Algorithm {
         assets: &Assets,
         population_size: usize,
         population: &Population,
-    ) -> Result<Population> {
-        let mut fitness = 0.0;
+    ) -> Result<(Population, usize)> {
         let mut output = Population::individuals(&population.individuals);
-        for epoch in 0..self.epochs {
+        let mut epoch = 0;
+        while epoch < self.epochs {
+            epoch += 1;
+
+            let fitnesses = self.fitness(&output, assets, grid)?;
+            output = self.sort(&output, &fitnesses)?;
+
+            let fitness = *fitnesses
+                .iter()
+                .max_by(|a, b| a.partial_cmp(b).unwrap())
+                .unwrap();
+
+            output.save(epoch, assets, grid);
+
             log::info!(
-                "batch: {} -- population size: {:?} -- fitness: {:?}",
+                "epoch: {} -- population size: {:?} -- fitness: {:?}",
                 epoch,
                 population.len(),
                 fitness
             );
-            let fitnesses = self.fitness(&output, assets, grid)?;
-            output = self.sort(&output, &fitnesses)?;
-            fitness = *fitnesses
-                .iter()
-                .max_by(|a, b| a.partial_cmp(b).unwrap())
-                .unwrap();
-            output.save(epoch, assets, grid);
+
+            if (fitness - self.threshold).abs() < f32::EPSILON {
+                log::info!(
+                    "early stopping: fitness is greater than threshold {}",
+                    self.threshold
+                );
+                break;
+            }
 
             output = self.select(&output, &fitnesses)?;
             output = self.crossover(&output, population_size)?;
             output = self.mutate(&output, assets)?;
         }
-        Ok(output)
+        Ok((output, epoch))
     }
 }

@@ -1,4 +1,4 @@
-use anyhow::{Ok, Result};
+use anyhow::Result;
 use rand::Rng;
 
 use crate::algorithm::crossover::Crossover;
@@ -36,6 +36,10 @@ impl Crossover for Random {
     }
 
     fn population(&self, population: &Population, size: usize) -> Result<Population> {
+        if population.is_empty() {
+            return Err(anyhow::anyhow!("random crossover: population is empty"));
+        }
+
         let mut rng = rand::rng();
 
         let population_size = population.len();
