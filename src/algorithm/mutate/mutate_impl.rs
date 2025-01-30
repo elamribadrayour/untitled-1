@@ -1,6 +1,7 @@
 use anyhow::Result;
 
 use crate::algorithm::mutate::Random;
+use crate::config::MutateConfig;
 use crate::population::{Gene, Individual, Population};
 use crate::utils::Assets;
 
@@ -10,9 +11,9 @@ pub trait Mutate {
     fn population(&self, population: &Population, assets: &Assets) -> Result<Population>;
 }
 
-pub fn get(name: &str, rate: f32) -> Result<Box<dyn Mutate>> {
-    match name {
-        "random" => Ok(Box::new(Random::new(rate)) as Box<dyn Mutate>),
+pub fn get(config: &MutateConfig) -> Result<Box<dyn Mutate>> {
+    match config.name.as_str() {
+        "random" => Ok(Box::new(Random::new(config.rate)) as Box<dyn Mutate>),
         _ => Err(anyhow::anyhow!("unknown fitness method name")),
     }
 }

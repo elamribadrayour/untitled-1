@@ -6,23 +6,25 @@ use crate::algorithm::Fitness;
 use crate::population::{Gene, Individual, Population};
 use crate::utils::{Assets, Grid};
 
-pub struct Uniformity;
+pub struct Uniformity {
+    range: f32,
+}
 
 impl Uniformity {
-    pub fn new() -> Self {
-        Self {}
+    pub fn new(range: f32) -> Self {
+        Self { range }
     }
 }
 
 impl Fitness for Uniformity {
     fn gene(&self, gene: &Gene, individual: &Individual, _: &Assets, grid: &Grid) -> Result<f32> {
-        let uniformity = grid
-            .neighbors(gene.id, 10)
+        let neighbors = grid.neighbors(gene.id, self.range as usize);
+        let nb_unique_colors = neighbors
             .iter()
             .map(|id| individual.genes[*id].color)
             .collect::<HashSet<_>>()
-            .len() as f32
-            / 5.0;
+            .len() as f32;
+        let uniformity = 1.0 - nb_unique_colors / neighbors.len() as f32;
         Ok(uniformity)
     }
 

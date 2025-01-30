@@ -58,7 +58,7 @@ impl Individual {
         }
 
         output
-            .save(format!("results/result-{}-{}.png", self.id, epoch))
+            .save(format!("results/result-{}.png", epoch))
             .unwrap();
     }
 }

@@ -3,7 +3,7 @@
 This project is a straightforward implementation of a genetic algorithm, designed for anyone curious to understand the steps involved in such algorithms. The assets are genes of different colors generated to simulate the genetic process. The goal is to help users understand the evolutionary process that each individual undergoes during a genetic algorithm evolution, as visualized through the images saved.
 
 <p align="center">
-    <img src="assets/result.png" width="500" height="500" />
+    <img src="result.gif" width="500" height="500" />
 </p>
 
 ## Project Structure
@@ -18,9 +18,9 @@ This project is a straightforward implementation of a genetic algorithm, designe
 The project uses the following dependencies, as specified in `Cargo.toml`:
 
 - `anyhow`: For error handling.
-- `hex_color`: For parsing hexadecimal color codes.
 - `image`: For image processing.
 - `rand`: For random number generation.
+- `hex_color`: For parsing hexadecimal color codes.
 
 ## Building and Running
 
@@ -29,8 +29,7 @@ To build and run the project, ensure you have Git, Rust and Cargo installed. The
 ```
 git clone https://github.com/elamribadrayour/untitled-1.git
 cd untitled-1
-cargo build
-cargo run
+cargo run --release
 ```
 
 ## Usage
@@ -42,6 +41,26 @@ The application runs a genetic algorithm over a specified number of epochs. It p
 3. **Crossover**: Combines individuals to create new offspring.
 4. **Mutation**: Mutates individuals to introduce variation.
 
+## Principles
+
+
+### Fitness
+
+* Random: Generates a random fitness value for each population, inidividual and gene.
+* Uniformity: Checks how much a set of neighboring genes have a uniformity of colors.
+
+### Selection
+
+* Random: Selects a random individual from the population.
+* Best: Selects the best individuals from the population.
+
+### Crossover
+
+* Random: Selects a random gene from the parents and copies it to the offspring.
+
+### Mutation
+
+* Random: Change the color a gene randomly.
 
 ## License
 

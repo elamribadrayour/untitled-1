@@ -1,3 +1,4 @@
+use crate::config::PopulationConfig;
 use crate::population::Individual;
 use crate::utils::{Assets, Grid};
 
@@ -6,10 +7,10 @@ pub struct Population {
 }
 
 impl Population {
-    pub fn new(population_size: usize, individual_size: usize, assets: &Assets) -> Self {
+    pub fn new(config: &PopulationConfig, assets: &Assets) -> Self {
         Self {
-            individuals: (0..population_size)
-                .map(|id| Individual::new(id, individual_size, assets))
+            individuals: (0..config.population_size)
+                .map(|id| Individual::new(id, config.individual_size, assets))
                 .collect(),
         }
     }
@@ -29,8 +30,6 @@ impl Population {
     }
 
     pub fn save(&self, epoch: usize, assets: &Assets, grid: &Grid) {
-        self.individuals.iter().for_each(|i| {
-            i.save(epoch, assets, grid);
-        });
+        self.individuals[0].save(epoch, assets, grid);
     }
 }

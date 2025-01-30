@@ -1028,6 +1028,7 @@ name = "untitled-1"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "gif",
  "hex_color",
  "image",
  "log",

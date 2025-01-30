@@ -8,7 +8,7 @@ pub struct Assets {
 }
 
 impl Assets {
-    pub fn new(size: usize) -> Self {
+    pub fn new(nb_colors: usize) -> Self {
         let colors = [
             "#2ca58d", // Teal
             "#f46197", // Pink
@@ -21,8 +21,12 @@ impl Assets {
             "#d64161", // Red
             "#6b4226", // Brown
         ];
-        let values = colors.iter().map(|x| Asset::new(x, size)).collect();
-        Self { size, values }
+        let values: Vec<Asset> = colors
+            .iter()
+            .take(nb_colors)
+            .map(|x| Asset::new(x, 100))
+            .collect();
+        Self { size: 100, values }
     }
 
     pub fn rand(&self) -> usize {

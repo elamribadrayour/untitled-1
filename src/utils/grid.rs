@@ -18,17 +18,18 @@ impl Grid {
 
     pub fn neighbors(&self, id: usize, range: usize) -> Vec<usize> {
         let [x, y] = self.get(id);
-        let directions = (0..(range as i32)).map(|i| (i, -i)).collect::<Vec<_>>();
+        let directions = (-(range as i32)..=range as i32)
+            .flat_map(|dx| (-(range as i32)..=range as i32).map(move |dy| (dx, dy)))
+            .collect::<Vec<_>>();
         let neighbors = self
             .positions
             .iter()
             .enumerate()
-            .filter(|(i, pos)| {
+            .filter(|(_, pos)| {
                 let (px, py) = (pos[0] as i32, pos[1] as i32);
-                *i != id
-                    && directions
-                        .iter()
-                        .any(|&(dx, dy)| px == (x as i32) + dx && py == (y as i32) + dy)
+                directions
+                    .iter()
+                    .any(|&(dx, dy)| px == (x as i32) + dx && py == (y as i32) + dy)
             })
             .map(|(i, _)| i)
             .collect();
