@@ -1,3 +1,5 @@
+use anyhow::Result;
+
 use crate::config::PopulationConfig;
 use crate::population::Individual;
 use crate::utils::{Assets, Grid};
@@ -7,18 +9,15 @@ pub struct Population {
 }
 
 impl Population {
-    pub fn new(config: &PopulationConfig, assets: &Assets) -> Self {
-        Self {
-            individuals: (0..config.population_size)
-                .map(|id| Individual::new(id, config.individual_size, assets))
-                .collect(),
-        }
+    pub fn new(config: &PopulationConfig, assets: &Assets) -> Result<Self> {
+        let individuals = (0..config.population_size)
+            .map(|id| Individual::new(id, &assets.choose(config.individual_size)?))
+            .collect::<Result<Vec<_>>>()?;
+        Ok(Self { individuals })
     }
 
-    pub fn individuals(individuals: &[Individual]) -> Self {
-        Self {
-            individuals: individuals.to_vec(),
-        }
+    pub fn individuals(individuals: Vec<Individual>) -> Self {
+        Self { individuals }
     }
 
     pub fn is_empty(&self) -> bool {

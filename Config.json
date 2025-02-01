@@ -1,0 +1,31 @@
+{
+    "assets": {
+        "size": 50,
+        "image": "star",
+        "nb_colors": 1000
+    },
+    "population": {
+        "population_size": 100,
+        "individual_size": 400
+    },
+    "algorithm": {
+        "epochs": 100,
+        "threshold": 1.0,
+        "mutation": {
+            "name": "directed",
+            "rate": 0.1,
+            "speed": 0.1
+        },
+        "crossover": {
+            "name": "random",
+            "rate": 0.5
+        },
+        "selection": {
+            "name": "truncation",
+            "rate": 0.5
+        },
+        "fitness": {
+            "name": "strict-uniformity"
+        }
+    }
+}

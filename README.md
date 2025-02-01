@@ -17,10 +17,16 @@ This project is a straightforward implementation of a genetic algorithm, designe
 
 The project uses the following dependencies, as specified in `Cargo.toml`:
 
+- `gif`: For generating GIFs.
 - `anyhow`: For error handling.
+- `simple_logger`: For logging.
 - `image`: For image processing.
+- `rayon`: For parallel processing.
+- `serde_json`: For parsing JSON data.
 - `rand`: For random number generation.
+- `plotters`: For plotting the results.
 - `hex_color`: For parsing hexadecimal color codes.
+- `serde`: For serializing and deserializing JSON data.
 
 ## Building and Running
 
@@ -52,7 +58,8 @@ The application runs a genetic algorithm over a specified number of epochs. It p
 ### Selection
 
 * **Random**: Selects a random individual from the population.
-* **Best**: Selects the best individuals from the population.
+* **Truncation**: Selects the best individuals from the population.
+* **Proportionate**: Selects the best individuals by roulette wheel cumulation of probabilities based on fitness.
 
 ### Crossover
 
@@ -61,6 +68,7 @@ The application runs a genetic algorithm over a specified number of epochs. It p
 ### Mutation
 
 * **Random**: Change the color a gene randomly.
+* **Directed**: Change the color of a gene by a range from the previous color.
 
 ## License
 

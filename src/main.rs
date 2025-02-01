@@ -7,57 +7,32 @@ use anyhow::Result;
 use simple_logger::SimpleLogger;
 
 use crate::algorithm::Algorithm;
-use crate::config::{
-    AlgorithmConfig, CrossoverConfig, FitnessConfig, MutateConfig, PopulationConfig, SelectConfig,
-};
+use crate::config::Config;
 use crate::population::Population;
 use crate::utils::{Assets, Grid};
 
 fn main() -> Result<()> {
     SimpleLogger::new().init().unwrap();
 
-    let population_config = PopulationConfig {
-        nb_colors: 100,
-        population_size: 100,
-        individual_size: 15 * 15,
-    };
-    let algorithm_config = AlgorithmConfig {
-        epochs: 1000,
-        threshold: 1.0,
-        mutation_config: MutateConfig {
-            name: "random".to_string(),
-            rate: 0.01,
-        },
-        crossover_config: CrossoverConfig {
-            name: "random".to_string(),
-            rate: 0.3,
-        },
-        selection_config: SelectConfig {
-            name: "best".to_string(),
-            rate: 0.3,
-        },
-        fitness_config: FitnessConfig {
-            name: "strict-uniformity".to_string(),
-        },
-    };
+    let config = Config::new("Config.json")?;
 
     log::info!("loading assets");
-    let assets = Assets::new(population_config.nb_colors);
-    let grid = Grid::new(population_config.individual_size);
+    let assets = Assets::new(&config.assets);
+    let grid = Grid::new(config.population.individual_size);
 
     log::info!("loading algorithm");
-    let algorithm = Algorithm::new(&algorithm_config)?;
+    let algorithm = Algorithm::new(&config.algorithm)?;
     log::info!("creating results directory");
     std::fs::create_dir_all("results")?;
 
     log::info!("creating population");
-    let population = Population::new(&population_config, &assets);
+    let population = Population::new(&config.population, &assets)?;
 
     log::info!("running algorithm");
     let (_, epoch) = algorithm.run(
         &grid,
         &assets,
-        population_config.population_size,
+        config.population.population_size,
         &population,
     )?;
 

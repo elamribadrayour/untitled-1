@@ -1,5 +1,7 @@
 use anyhow::Result;
+use rand::distr::Uniform;
 use rand::Rng;
+use rayon::iter::{IntoParallelIterator, IntoParallelRefIterator, ParallelIterator};
 
 use crate::algorithm::crossover::Crossover;
 use crate::population::{Gene, Individual, Population};
@@ -15,19 +17,24 @@ impl Random {
 }
 
 impl Crossover for Random {
-    fn individual(&self, i1: &Individual, i2: &Individual, id: usize) -> Result<Individual> {
-        if i1.is_empty() || i1.len() != i2.len() {
-            return Err(anyhow::anyhow!("i1 empty or individuals lengths mismatch"));
+    fn individual(
+        &self,
+        id: usize,
+        p1: &Individual,
+        p2: &Individual,
+        rngs: &[f32],
+    ) -> Result<Individual> {
+        if p1.is_empty() || p1.len() != p2.len() {
+            return Err(anyhow::anyhow!("parents empty or lengths mismatch"));
         }
 
-        let size = i1.len();
-        let mut rng = rand::rng();
+        let size = p1.len();
         let genes = (0..size)
             .map(|i| {
-                if rng.random_range(0.0..1.0) < self.rate {
-                    i1.genes[i].clone()
+                if rngs[i] < self.rate {
+                    p1.genes[i].clone()
                 } else {
-                    i2.genes[i].clone()
+                    p2.genes[i].clone()
                 }
             })
             .collect::<Vec<Gene>>();
@@ -40,19 +47,34 @@ impl Crossover for Random {
             return Err(anyhow::anyhow!("random crossover: population is empty"));
         }
 
-        let mut rng = rand::rng();
+        let range_distr = Uniform::new(0.0, 1.0)?;
+        let population_distr = Uniform::new(0, population.len())?;
 
-        let population_size = population.len();
-        let individuals = (0..size)
-            .map(|id| {
-                let id1 = rng.random_range(0..population_size);
-                let id2 = rng.random_range(0..population_size);
-                let i1 = &population.individuals[id1];
-                let i2 = &population.individuals[id2];
-                self.individual(i1, i2, id).unwrap()
+        let nb_genes = population.individuals[0].len();
+        let rngs = (0..size)
+            .into_par_iter()
+            .map_init(rand::rng, |rng, _| {
+                (0..nb_genes)
+                    .map(|_| rng.sample(range_distr))
+                    .collect::<Vec<f32>>()
             })
-            .collect::<Vec<Individual>>();
+            .collect::<Vec<Vec<f32>>>();
 
-        Ok(Population::individuals(&individuals))
+        let inputs = (0..size)
+            .into_par_iter()
+            .map_init(rand::rng, |rng, id| {
+                let rngs = rngs[id].clone();
+                let p1 = &population.individuals[rng.sample(population_distr)];
+                let p2 = &population.individuals[rng.sample(population_distr)];
+                (id, p1, p2, rngs)
+            })
+            .collect::<Vec<(usize, &Individual, &Individual, Vec<f32>)>>();
+
+        let individuals = inputs
+            .par_iter()
+            .map(|(id, p1, p2, rngs)| self.individual(*id, p1, p2, rngs))
+            .collect::<Result<Vec<Individual>>>()?;
+
+        Ok(Population::individuals(individuals))
     }
 }

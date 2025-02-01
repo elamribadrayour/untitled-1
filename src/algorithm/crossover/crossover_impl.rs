@@ -1,11 +1,16 @@
-use anyhow::Result;
-
 use crate::algorithm::crossover::Random;
 use crate::config::CrossoverConfig;
 use crate::population::{Individual, Population};
+use anyhow::Result;
 
 pub trait Crossover {
-    fn individual(&self, i1: &Individual, i2: &Individual, id: usize) -> Result<Individual>;
+    fn individual(
+        &self,
+        id: usize,
+        p1: &Individual,
+        p2: &Individual,
+        rngs: &[f32],
+    ) -> Result<Individual>;
     fn population(&self, population: &Population, size: usize) -> Result<Population>;
 }
 

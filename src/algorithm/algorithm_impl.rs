@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 use anyhow::Result;
 
 use crate::algorithm::{crossover, fitness, mutate, select};
@@ -19,10 +21,10 @@ impl Algorithm {
         Ok(Self {
             epochs: config.epochs,
             threshold: config.threshold,
-            fitness: fitness::get(&config.fitness_config)?,
-            mutate: mutate::get(&config.mutation_config)?,
-            select: select::get(&config.selection_config)?,
-            crossover: crossover::get(&config.crossover_config)?,
+            fitness: fitness::get(&config.fitness)?,
+            mutate: mutate::get(&config.mutation)?,
+            select: select::get(&config.selection)?,
+            crossover: crossover::get(&config.crossover)?,
         })
     }
 
@@ -41,13 +43,23 @@ impl Algorithm {
             .iter()
             .zip(fitnesses)
             .collect::<Vec<(&Individual, &f32)>>();
+
         individuals
             .sort_by(|(_, &f1), (_, &f2)| f2.partial_cmp(&f1).unwrap_or(std::cmp::Ordering::Equal));
+
         let individuals = individuals
             .iter()
             .map(|(i, _)| (*i).clone())
             .collect::<Vec<Individual>>();
-        Ok(Population::individuals(&individuals))
+
+        Ok(Population::individuals(individuals))
+    }
+
+    pub fn get_max(&self, fitnesses: &[f32]) -> f32 {
+        *fitnesses
+            .iter()
+            .max_by(|a, b| a.partial_cmp(b).unwrap())
+            .unwrap()
     }
 
     pub fn mutate(&self, population: &Population, assets: &Assets) -> Result<Population> {
@@ -69,27 +81,18 @@ impl Algorithm {
         population_size: usize,
         population: &Population,
     ) -> Result<(Population, usize)> {
-        let mut output = Population::individuals(&population.individuals);
+        let mut output = Population::individuals(population.individuals.clone());
         let mut epoch = 0;
         while epoch < self.epochs {
             epoch += 1;
+            let start = Instant::now();
 
-            let fitnesses = self.fitness(&output, assets, grid)?;
-            output = self.sort(&output, &fitnesses)?;
+            let fitnesses = self.fitness(&output, assets, grid)?; // 180 ms
 
-            let fitness = *fitnesses
-                .iter()
-                .max_by(|a, b| a.partial_cmp(b).unwrap())
-                .unwrap();
-
+            output = self.sort(&output, &fitnesses)?; //455 ms
             output.save(epoch, assets, grid);
 
-            log::info!(
-                "epoch: {} -- population size: {:?} -- fitness: {:?}",
-                epoch,
-                population.len(),
-                fitness
-            );
+            let fitness = self.get_max(&fitnesses);
 
             if (fitness - self.threshold).abs() < f32::EPSILON {
                 log::info!(
@@ -99,9 +102,18 @@ impl Algorithm {
                 break;
             }
 
-            output = self.select(&output, &fitnesses)?;
-            output = self.crossover(&output, population_size)?;
+            output = self.select(&output, &fitnesses)?; // 266ms
+            output = self.crossover(&output, population_size)?; // 100ms
             output = self.mutate(&output, assets)?;
+
+            if epoch % 100 == 0 {
+                log::info!(
+                    "epoch: {} -- fitness: {:?} -- time: {:?}ms",
+                    epoch,
+                    fitness,
+                    start.elapsed().as_millis()
+                );
+            }
         }
         Ok((output, epoch))
     }

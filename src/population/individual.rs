@@ -1,3 +1,4 @@
+use anyhow::Result;
 use image::RgbaImage;
 
 use crate::utils::{Assets, Grid};
@@ -11,11 +12,17 @@ pub struct Individual {
 }
 
 impl Individual {
-    pub fn new(id: usize, individual_size: usize, assets: &Assets) -> Self {
-        let genes = (0..individual_size)
-            .map(|id| Gene::new(id, assets))
+    pub fn new(id: usize, colors: &[usize]) -> Result<Self> {
+        if colors.is_empty() {
+            return Err(anyhow::anyhow!("colors length is 0"));
+        }
+
+        let genes = colors
+            .iter()
+            .enumerate()
+            .map(|(i, color)| Gene::new(i, *color))
             .collect();
-        Self { id, genes }
+        Ok(Self { id, genes })
     }
 
     pub fn genes(genes: &[Gene], id: usize) -> Self {
