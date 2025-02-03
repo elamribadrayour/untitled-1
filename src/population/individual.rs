@@ -8,6 +8,7 @@ use crate::population::Gene;
 #[derive(Clone)]
 pub struct Individual {
     pub id: usize,
+    pub fitness: f32,
     pub genes: Vec<Gene>,
 }
 
@@ -22,12 +23,17 @@ impl Individual {
             .enumerate()
             .map(|(i, color)| Gene::new(i, *color))
             .collect();
-        Ok(Self { id, genes })
+        Ok(Self {
+            id,
+            genes,
+            fitness: 0.0,
+        })
     }
 
     pub fn genes(genes: &[Gene], id: usize) -> Self {
         Self {
             id,
+            fitness: 0.0,
             genes: genes.to_vec(),
         }
     }
@@ -44,7 +50,7 @@ impl Individual {
         self.genes.len()
     }
 
-    pub fn save(&self, epoch: usize, assets: &Assets, grid: &Grid) {
+    pub fn save(&self, assets: &Assets, grid: &Grid, data_dir: &str) -> Result<()> {
         let images = self
             .genes
             .iter()
@@ -64,8 +70,7 @@ impl Individual {
             }
         }
 
-        output
-            .save(format!("results/result-{}.png", epoch))
-            .unwrap();
+        output.save(format!("{}/{}.png", data_dir, self.id))?;
+        Ok(())
     }
 }

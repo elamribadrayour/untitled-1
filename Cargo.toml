@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.95"
+chrono = "0.4.39"
 gif = "0.13.1"
 hex_color = "3.0.0"
 image = "0.25.5"

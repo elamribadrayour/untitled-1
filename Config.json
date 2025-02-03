@@ -1,28 +1,26 @@
 {
     "assets": {
-        "size": 50,
-        "image": "star",
-        "nb_colors": 1000
+        "size": 10,
+        "nb_colors": 100,
+        "image": "dome-of-the-rock"
     },
     "population": {
-        "population_size": 100,
-        "individual_size": 400
+        "population_size": 10,
+        "individual_size": 10000
     },
     "algorithm": {
-        "epochs": 100,
+        "epochs": 1000,
         "threshold": 1.0,
         "mutation": {
-            "name": "directed",
-            "rate": 0.1,
-            "speed": 0.1
+            "name": "adaptive",
+            "rate": 0.1
         },
         "crossover": {
-            "name": "random",
-            "rate": 0.5
+            "name": "best"
         },
         "selection": {
             "name": "truncation",
-            "rate": 0.5
+            "rate": 0.2
         },
         "fitness": {
             "name": "strict-uniformity"

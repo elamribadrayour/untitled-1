@@ -1,3 +1,4 @@
-/target
-/results
+plots/
+target/
+results/
 .DS_Store

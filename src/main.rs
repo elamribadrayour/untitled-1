@@ -15,30 +15,32 @@ fn main() -> Result<()> {
     SimpleLogger::new().init().unwrap();
 
     let config = Config::new("Config.json")?;
+    let data_dir = format!(
+        "results/exec_date={}",
+        chrono::Local::now().format("%Y-%m-%d_%H-%M-%S")
+    );
+    std::fs::create_dir_all(&data_dir)?;
 
     log::info!("loading assets");
-    let assets = Assets::new(&config.assets);
+    let assets = Assets::new(&config.assets)?;
     let grid = Grid::new(config.population.individual_size);
 
     log::info!("loading algorithm");
-    let algorithm = Algorithm::new(&config.algorithm)?;
-    log::info!("creating results directory");
-    std::fs::create_dir_all("results")?;
+    let mut algorithm = Algorithm::new(&config.algorithm)?;
 
     log::info!("creating population");
-    let population = Population::new(&config.population, &assets)?;
+    let mut population = Population::new(&config.population, &assets)?;
 
     log::info!("running algorithm");
     let (_, epoch) = algorithm.run(
         &grid,
         &assets,
         config.population.population_size,
-        &population,
+        &mut population,
+        &data_dir,
     )?;
 
-    std::fs::copy(format!("results/result-{}.png", epoch), "result.png")?;
-    utils::create_gif(epoch)?;
-    std::fs::remove_dir_all("results")?;
-
+    utils::create_gif(epoch, &data_dir)?;
+    config.save(&data_dir)?;
     Ok(())
 }

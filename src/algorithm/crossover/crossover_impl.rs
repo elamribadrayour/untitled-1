@@ -1,4 +1,4 @@
-use crate::algorithm::crossover::Random;
+use crate::algorithm::crossover::{Best, Random};
 use crate::config::CrossoverConfig;
 use crate::population::{Individual, Population};
 use anyhow::Result;
@@ -16,7 +16,8 @@ pub trait Crossover {
 
 pub fn get(config: &CrossoverConfig) -> Result<Box<dyn Crossover>> {
     match config.name.as_str() {
-        "random" => Ok(Box::new(Random::new(config.rate)) as Box<dyn Crossover>),
+        "best" => Ok(Box::new(Best) as Box<dyn Crossover>),
+        "random" => Ok(Box::new(Random::new(config.rate.unwrap_or(0.5))) as Box<dyn Crossover>),
         _ => Err(anyhow::anyhow!("unknown fitness method name")),
     }
 }

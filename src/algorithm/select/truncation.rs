@@ -14,15 +14,20 @@ impl Truncation {
 }
 
 impl Select for Truncation {
-    fn population(&self, population: &Population, fitnesses: &[f32]) -> Result<Population> {
+    fn population(&self, population: &Population) -> Result<Population> {
         // https://en.wikipedia.org/wiki/Truncation_selection
-        if population.is_empty() || population.len() != fitnesses.len() {
-            return Err(anyhow::anyhow!("population is empty or mismatched length"));
+        if population.is_empty() {
+            return Err(anyhow::anyhow!("population is empty"));
         }
 
         // Sort by fitness
         let mut indices = (0..population.len()).collect::<Vec<usize>>();
-        indices.sort_by(|a, b| fitnesses[*b].partial_cmp(&fitnesses[*a]).unwrap());
+        indices.sort_by(|a, b| {
+            population.individuals[*b]
+                .fitness
+                .partial_cmp(&population.individuals[*a].fitness)
+                .unwrap()
+        });
 
         // Select the best individuals
         let size = (self.rate * population.len() as f32) as usize;

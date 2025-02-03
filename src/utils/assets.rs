@@ -1,6 +1,7 @@
 use anyhow::Result;
 use image::imageops::FilterType;
 use rand::distr::{Distribution, Uniform};
+use rand::seq::SliceRandom;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 
 use crate::config::AssetConfig;
@@ -12,7 +13,7 @@ pub struct Assets {
 }
 
 impl Assets {
-    pub fn new(config: &AssetConfig) -> Self {
+    pub fn new(config: &AssetConfig) -> Result<Self> {
         let colors = [
             // Reds
             "#ff0000", // Pure Red
@@ -59,15 +60,18 @@ impl Assets {
                 .to_rgba8(),
         };
 
-        let values: Vec<Asset> = colors
-            .iter()
-            .take(config.nb_colors)
-            .map(|x| Asset::new(x, &image))
+        let mut rng = rand::rng();
+        let mut indices: Vec<usize> = (0..colors.len()).collect();
+        let nb_colors = config.nb_colors.min(colors.len());
+        indices.shuffle(&mut rng);
+        let values: Vec<Asset> = (0..nb_colors)
+            .map(|i| Asset::new(colors[indices[i]], &image))
             .collect();
-        Self {
+
+        Ok(Self {
             size: config.size,
             values,
-        }
+        })
     }
 
     pub fn len(&self) -> usize {
@@ -76,10 +80,10 @@ impl Assets {
 
     pub fn choose(&self, size: usize) -> Result<Vec<usize>> {
         let len = self.values.len();
-        let range = Uniform::new(0, len)?;
+        let sampler = Uniform::new(0, len)?;
         let colors = (0..size)
             .into_par_iter()
-            .map_init(rand::rng, |rng, _| range.sample(rng))
+            .map_init(rand::rng, |rng, _| sampler.sample(rng))
             .collect::<Vec<usize>>();
         Ok(colors)
     }

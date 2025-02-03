@@ -17,6 +17,14 @@ impl Random {
 }
 
 impl Mutate for Random {
+    fn update(&mut self, _: f32) {
+        // Do nothing
+    }
+
+    fn current_rate(&self) -> f32 {
+        self.rate
+    }
+
     fn gene(&self, gene: &Gene, color: (f32, usize)) -> Result<Gene> {
         if color.0 < self.rate {
             Ok(Gene::new(gene.id, color.1))

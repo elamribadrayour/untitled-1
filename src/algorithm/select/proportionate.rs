@@ -1,5 +1,6 @@
 use anyhow::Result;
 use rand::seq::IndexedRandom;
+use rayon::iter::{IntoParallelIterator, ParallelIterator};
 
 use crate::algorithm::Select;
 use crate::population::{Individual, Population};
@@ -15,21 +16,20 @@ impl Proportionate {
 }
 
 impl Select for Proportionate {
-    fn population(&self, population: &Population, fitnesses: &[f32]) -> Result<Population> {
-        let mut rng = rand::rng();
-
+    fn population(&self, population: &Population) -> Result<Population> {
         let input_size = population.len();
-        let total = fitnesses.iter().sum::<f32>();
+        let total = population.iter().map(|i| i.fitness).sum::<f32>();
         let output_size = (self.rate * input_size as f32) as usize;
         let individuals = (0..output_size)
-            .map(|_| {
+            .into_par_iter()
+            .map_init(rand::rng, |rng, _| {
                 let mut cumulative = 0.0;
                 let mut ids = (0..input_size).collect::<Vec<usize>>();
-                for i in 0..input_size {
-                    let id = ids.choose(&mut rng).unwrap();
-                    cumulative += fitnesses[*id] / total;
+                for _ in 0..input_size {
+                    let id = ids.choose(rng).unwrap();
+                    cumulative += population.individuals[*id].fitness / total;
                     if cumulative > 1.0 {
-                        return population.individuals[i].clone();
+                        return population.individuals[*id].clone();
                     }
                     ids = ids
                         .iter()

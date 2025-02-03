@@ -1,8 +1,8 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 use crate::config::{CrossoverConfig, FitnessConfig, MutateConfig, SelectConfig};
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 pub struct AlgorithmConfig {
     pub epochs: usize,
     pub threshold: f32,

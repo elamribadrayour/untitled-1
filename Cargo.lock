@@ -1427,6 +1427,7 @@ name = "untitled-1"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "chrono",
  "gif 0.13.1",
  "hex_color",
  "image 0.25.5",

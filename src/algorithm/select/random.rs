@@ -13,7 +13,7 @@ impl Random {
 }
 
 impl Select for Random {
-    fn population(&self, population: &Population, _: &[f32]) -> Result<Population> {
+    fn population(&self, population: &Population) -> Result<Population> {
         if population.is_empty() {
             return Err(anyhow::anyhow!("population is empty"));
         }

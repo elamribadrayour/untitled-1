@@ -1,7 +1,7 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 pub struct CrossoverConfig {
     pub name: String,
-    pub rate: f32,
+    pub rate: Option<f32>,
 }

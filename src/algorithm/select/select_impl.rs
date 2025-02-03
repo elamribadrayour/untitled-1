@@ -5,7 +5,7 @@ use crate::config::SelectConfig;
 use crate::population::Population;
 
 pub trait Select {
-    fn population(&self, population: &Population, fitnesses: &[f32]) -> Result<Population>;
+    fn population(&self, population: &Population) -> Result<Population>;
 }
 
 pub fn get(config: &SelectConfig) -> Result<Box<dyn Select>> {

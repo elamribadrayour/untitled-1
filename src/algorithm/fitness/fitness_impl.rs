@@ -6,9 +6,8 @@ use crate::population::{Individual, Population};
 use crate::utils::{Assets, Grid};
 
 pub trait Fitness {
-    fn individual(&self, individual: &Individual, assets: &Assets, grid: &Grid) -> Result<f32>;
-    fn population(&self, population: &Population, assets: &Assets, grid: &Grid)
-        -> Result<Vec<f32>>;
+    fn individual(&self, individual: &mut Individual, assets: &Assets, grid: &Grid) -> Result<()>;
+    fn population(&self, population: &mut Population, assets: &Assets, grid: &Grid) -> Result<()>;
 }
 
 pub fn get(config: &FitnessConfig) -> Result<Box<dyn Fitness>> {
