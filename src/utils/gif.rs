@@ -16,7 +16,7 @@ pub fn create_gif(epochs: usize, data_dir: &str) -> Result<()> {
     let gif_path = format!("{}/result.gif", data_dir);
     let mut image = File::create(gif_path).unwrap();
     let mut encoder = Encoder::new(&mut image, width as u16, height as u16, color_map).unwrap();
-    encoder.set_repeat(Repeat::Finite(0)).unwrap();
+    encoder.set_repeat(Repeat::Infinite).unwrap();
 
     let step = if nb_epochs > 100 { nb_epochs / 100 } else { 1 };
     for epoch in (start..=end).step_by(step) {
