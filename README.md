@@ -2,9 +2,14 @@
 
 This project is a straightforward implementation of a genetic algorithm, designed for anyone curious to understand the steps involved in such algorithms. The assets are genes of different colors generated to simulate the genetic process. The goal is to help users understand the evolutionary process that each individual undergoes during a genetic algorithm evolution, as visualized through the images saved.
 
-<p align="center">
-    <img src="result.gif" width="500" height="500" />
-</p>
+<div align="center">
+    <table>
+        <tr>
+            <td><img src="result-1.gif" width="500" height="500" /></td>
+            <td><img src="result-2.gif" width="500" height="500" /></td>
+        </tr>
+    </table>
+</div>
 
 ## Project Structure
 

@@ -1,8 +1,8 @@
 {
     "assets": {
         "size": 10,
-        "nb_colors": 100,
-        "image": "dome-of-the-rock"
+        "image": "star",
+        "nb_colors": 100
     },
     "population": {
         "population_size": 10,
