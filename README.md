@@ -21,6 +21,7 @@ The project uses the following dependencies, as specified in `Cargo.toml`:
 - `anyhow`: For error handling.
 - `simple_logger`: For logging.
 - `image`: For image processing.
+- `chrono`: For logging the time.
 - `rayon`: For parallel processing.
 - `serde_json`: For parsing JSON data.
 - `rand`: For random number generation.
@@ -69,6 +70,7 @@ The application runs a genetic algorithm over a specified number of epochs. It p
 
 * **Random**: Change the color a gene randomly.
 * **Directed**: Change the color of a gene by a range from the previous color.
+* **Adaptive**: Change the color of a gene by a range from the previous color but adapt the rate of mutation based on the fitness evolution.
 
 ## License
 

@@ -5,7 +5,7 @@ use gif::{Encoder, Frame, Repeat};
 
 pub fn create_gif(epochs: usize, data_dir: &str) -> Result<()> {
     let start = 0;
-    let end = epochs - 1;
+    let end = epochs;
     let nb_epochs = end - start;
     log::info!("creating gif for {} epochs", nb_epochs);
 
