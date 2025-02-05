@@ -5,8 +5,9 @@ This project is a straightforward implementation of a genetic algorithm, designe
 <div align="center">
     <table>
         <tr>
-            <td><img src="result-1.gif" width="500" height="500" /></td>
-            <td><img src="result-2.gif" width="500" height="500" /></td>
+            <td><img src="images/strict-uniformity/result-1.gif" width="500" height="500" /></td>
+            <td><img src="images/strict-uniformity/result-2.gif" width="500" height="500" /></td>
+            <td><img src="images/strict-uniformity/result-3.gif" width="500" height="500" /></td>
         </tr>
     </table>
 </div>
